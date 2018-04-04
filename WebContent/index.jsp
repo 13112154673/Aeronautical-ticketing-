@@ -69,7 +69,7 @@ body {
 						<div id="myTabContent" class="tab-content">
 							<div class="tab-pane fade in active" id="findflight">
 
-								<table class="table table-hover" id="table1">
+								<table class="table table-hover" id="table1" >
 									<tbody>
 										<form action="CreatTicket/detailedSearch" method="post">
 											<tr>

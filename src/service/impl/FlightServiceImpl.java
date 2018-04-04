@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import mapper.FlightMapper;
 import pojo.Flight;
 import pojo.FlightExample;
+import pojo.FlightExample.Criteria;
 import service.FlightService;
 import system.Page;
 
@@ -38,6 +39,17 @@ public class FlightServiceImpl implements FlightService {
 	public int total() {
 		FlightExample flightExample= new FlightExample();
 		return (int) flightmapper.countByExample(flightExample);
+	}
+
+	@Override
+	public List<Flight> findAllFlight(String departurePlace, String arrivalPlace,Page page) {
+		FlightExample flightExample= new FlightExample();
+		flightExample.setOffset(page.getStart());
+		flightExample.setLimit(page.getCount());
+		Criteria criteria =flightExample.createCriteria();
+		criteria.andDeparturePlaceEqualTo(departurePlace);
+		criteria.andArrivalPlaceEqualTo(arrivalPlace);
+		return flightmapper.selectByExample(flightExample);
 	}
 
 }

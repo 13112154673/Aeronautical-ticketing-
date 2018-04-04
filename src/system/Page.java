@@ -5,6 +5,14 @@ public class Page {
 	private int count=2;
 	private int last=0;
 	
+	public Page() {
+
+	}
+	public Page(int start,int count) {
+		this.start=start;
+		this.count=count;
+	}
+	
 	public int getStart() {
 		return start;
 	}
