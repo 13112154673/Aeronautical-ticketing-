@@ -35,6 +35,7 @@ public class CreatTicketController {
 	 */
 	@RequestMapping("detailedSearch")
 	public ModelAndView detailedSearch(HttpServletRequest request) {
+		
 		ModelAndView mav = new ModelAndView("detailedSearch");
 		String departurePlace = request.getParameter("departurePlace");
 		String arrivalPlace = request.getParameter("arrivalPlace");
@@ -43,10 +44,29 @@ public class CreatTicketController {
 		if(departurePlace!=null&&arrivalPlace!=null) {
 			flightlist=flightService.findAllFlight(departurePlace, arrivalPlace,new Page(0,5));
 			System.out.println(flightlist.size());
-			String flightlistJson =JSON.toJSONString(flightlist);
+			String flightlistJson =JSON.toJSONString(flightlist, SerializerFeature.WriteDateUseDateFormat);
+			mav.addObject("flightslist",flightlistJson);
 			System.out.println(flightlistJson);
 		}
 		return mav;
+	}
+	/*
+	 * 1.2通过搜索信息返回航班列表的JSON
+	 */
+	@RequestMapping("redetailedSearch")
+	public void redetailedSearch(String departurePlace,String arrivalPlace,HttpServletResponse response,HttpServletRequest request) throws IOException {
+		response.setCharacterEncoding("UTF-8");  
+		PrintWriter out = response.getWriter();
+		
+		List<Flight> flightlist = new ArrayList<>();
+		System.out.println(departurePlace+"-------"+arrivalPlace);
+		if(departurePlace!=null&&arrivalPlace!=null) {
+			flightlist=flightService.findAllFlight(departurePlace, arrivalPlace,new Page(0,5));
+			System.out.println(flightlist.size());
+			String flightlistJson =JSON.toJSONString(flightlist, SerializerFeature.WriteDateUseDateFormat);
+			out.print(flightlistJson);
+			System.out.println(flightlistJson);
+		}
 	}
 
 	/*
