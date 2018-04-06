@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import pojo.Flight;
+import pojo.Passenger;
 import pojo.Ticket;
 import service.FlightService;
 import service.TicketService;
@@ -76,6 +78,29 @@ public class CreatTicketController {
 			out.print(ticketJson);
 		} else {
 			out.print("error");
+		}
+	}
+	
+	/*
+	 * 3.1订票，新增一个Ticket到数据库
+	 */
+	@RequestMapping("creatTicket")
+	public void creatTicket(Integer fId,Integer choose,HttpServletResponse response,HttpSession session) throws IOException {
+		// 返回给前台
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter out = response.getWriter();
+		// 获取当前乘客模型
+		Passenger passenger = (Passenger) session.getAttribute("onlinePassenger");
+		
+		Ticket ticket =new Ticket();
+		ticket.setPhone(passenger.getPhone());
+		ticket.setfId(fId);
+		ticket.setCobinChoose(choose);
+		
+		if(ticketService.insertTicket(ticket)) {
+			out.print("成功购票");
+		}else {
+			out.print("购票失败");
 		}
 	}
 }

@@ -42,19 +42,19 @@ div.container div.row div {
 	<nav class="navbar navbar-default navbar-fixed-top">
 	<div class="text-right">
 		<button class="btn btn-info"
-			onclick="javascrtpt:window.location.href='index.jsp'">首页</button>
+			onclick="window.location='../index.jsp'">首页</button>
 		<c:choose>
 			<c:when test="${onlinePassenger==null}">
 				<button class="btn btn-success"
-					onclick="javascrtpt:window.location.href='Passenger/jumpLogin'">登陆</button>
+					onclick="javascrtpt:window.location.href='../Passenger/jumpLogin'">登陆</button>
 				<button class="btn btn-default"
-					onclick="javascrtpt:window.location.href='Passenger/jumpRegister'">注册</button>
+					onclick="javascrtpt:window.location.href='../Passenger/jumpRegister'">注册</button>
 			</c:when>
 			<c:otherwise>
 				<button class="btn btn-success"
-					onclick="javascrtpt:window.location.href='Passenger/jumpInformation'">个人</button>
+					onclick="javascrtpt:window.location.href='../Passenger/jumpInformation'">个人</button>
 				<button class="btn btn-default"
-					onclick="javascrtpt:window.location.href='Passenger/logout'">注销</button>
+					onclick="javascrtpt:window.location.href='../Passenger/logout'">注销</button>
 			</c:otherwise>
 		</c:choose>
 	</div>
@@ -87,6 +87,7 @@ div.container div.row div {
 	<div id="result"></div>
 </body>
 <script>
+//进页面之前先请求一次航班数据
 $(document).ready(function(){
 	var departurePlace="${departurePlace}";
 	var	arrivalPlace="${arrivalPlace}";
@@ -102,14 +103,14 @@ $(document).ready(function(){
 		success : function(date) {
 			var str="";
 			for(var i=0;i<date.length;i++){
-			str+="<div class='container' onclick='choose(this)' data-fId ="+date[i]['fId']+">";
+			str+="<div class='container'>";
 			str+="<div class='row'>";
 			str+="<div class='col-xs-6 '>飞机编号："+date[i]['aId']+"<br>";
 			str+=date[i]['departureTime']+" 至 "+date[i]['arrivalTime']+"<br>"
 			str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
-			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name='activity' value='头等' ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
-			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name='activity' value='经济' ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
-			str+="<div class='col-xs-2 '>操作</div>";
+			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name="+date[i]['fId']+" value=0 ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
+			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name="+date[i]['fId']+" value=1 ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
+			str+="<div class='col-xs-2 ' onclick='choose(this)' data-fId ="+date[i]['fId']+">操作</div>";
 			str+="</div></div>";
 			}
 			$('#result').append(str);
@@ -120,9 +121,7 @@ $(document).ready(function(){
 	});
 
 })
-function choose(obj){
-	console.log(obj.getAttribute('data-fId'));
-}
+//重新搜索，用ajax请求数据
 function research(){
 	$('#result').html("");
 	var departurePlace=document.getElementById("departurePlace").value;
@@ -139,14 +138,14 @@ function research(){
 		success : function(date) {
 			var str="";
 			for(var i=0;i<date.length;i++){
-			str+="<div class='container' onclick='choose(this)' data-fId ="+date[i]['fId']+">";
+			str+="<div class='container'>";
 			str+="<div class='row'>";
 			str+="<div class='col-xs-6 '>飞机编号："+date[i]['aId']+"<br>";
 			str+=date[i]['departureTime']+" 至 "+date[i]['arrivalTime']+"<br>"
 			str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
-			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name='activity' value='头等' ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
-			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name='activity' value='经济' ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
-			str+="<div class='col-xs-2 '>操作</div>";
+			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name="+date[i]['fId']+" value=0 ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
+			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name="+date[i]['fId']+" value=1 ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
+			str+="<div class='col-xs-2 ' onclick='choose(this)' data-fId ="+date[i]['fId']+">操作</div>";
 			str+="</div></div>";
 			}
 			$('#result').append(str);
@@ -155,6 +154,35 @@ function research(){
 			alert("查询失败");
 		}
 	});
+}
+
+function choose(obj){
+	var fId=obj.getAttribute('data-fId');
+	//为了区分不同的单选项，采用航班ID做name
+	var choose=$("input[name="+fId+"]:checked").val();
+
+	if(choose==null){
+		alert("未选择舱位");
+	}else{
+		if(${onlinePassenger!=null}){
+			$.ajax({
+				type : "post",
+				url : "creatTicket",
+				data : {
+					fId : fId,
+					choose : choose
+				},
+				success : function(date) {
+					javascrtpt:window.location.href="../Passenger/jumpInformation";
+				},
+				error : function() {
+					alert("请重试");
+				}
+			});
+		}else{
+			alert("请先登录");
+		}
+	}
 }
 </script>
 </html>

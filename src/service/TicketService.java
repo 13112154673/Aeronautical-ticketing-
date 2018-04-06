@@ -21,6 +21,8 @@ public interface TicketService {
 	public List<Ticket> findAllTicket();
 	//5.删除一张简单机票
 	public boolean deleteTicket(Integer tId);
-	//4.获取系统里所有的航空飞机
+	//6.获取系统里所有的航空飞机
 	public List<Aircraft> findAllAircraft();
+	//7.向数据库新插入一个ticket
+	public Boolean insertTicket(Ticket ticket);
 }

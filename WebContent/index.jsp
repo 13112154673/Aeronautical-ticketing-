@@ -52,7 +52,7 @@ body {
 		</c:choose>
 	</div>
 	</nav>
-	<div>
+	
 		名字：${onlinePassenger.pName}
 		<button class="btn btn-default"
 			onclick="javascrtpt:window.location.href='CreatTicket/detailedSearch'">注销</button>

@@ -35,7 +35,7 @@ public class Ticket {
      *
      * @mbg.generated
      */
-    private Integer state;
+    private Integer state=0;
 
     /**
      *

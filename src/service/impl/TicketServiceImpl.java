@@ -113,4 +113,12 @@ public class TicketServiceImpl implements TicketService {
 		return null;
 	}
 
+	@Override
+	public Boolean insertTicket(Ticket ticket) {
+		if(ticket!=null && ticketmapper.insertSelective(ticket)>0) {
+			return true;
+		}
+		return false;
+	}
+
 }
