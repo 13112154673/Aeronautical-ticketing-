@@ -8,9 +8,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet" />
-<script src="js/jquery/2.0.0/jquery.min.js"></script>
-<script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+<!-- Bootstrap需要JQuery才能正常工作，所以需要导入jquery.min.js
+	接着是 Bootstrap的css，里面定义了各种样式
+	最后是 Bootstrap的js，用于产生交互效果，比如关闭警告框 -->
+<link href="../css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet" />
+<script src="../js/jquery/2.0.0/jquery.min.js"></script>
+<script src="../js/bootstrap/3.3.6/bootstrap.min.js"></script>
 <!-- 日期插件 -->
 <script src="../layDate-v5.0.9/laydate/laydate.js"></script>
 

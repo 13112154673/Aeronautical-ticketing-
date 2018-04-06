@@ -563,6 +563,66 @@ public class TicketExample {
             addCriterion("newf_id not between", value1, value2, "newfId");
             return (Criteria) this;
         }
+
+        public Criteria andCobinChooseIsNull() {
+            addCriterion("cobin_choose is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseIsNotNull() {
+            addCriterion("cobin_choose is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseEqualTo(Integer value) {
+            addCriterion("cobin_choose =", value, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseNotEqualTo(Integer value) {
+            addCriterion("cobin_choose <>", value, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseGreaterThan(Integer value) {
+            addCriterion("cobin_choose >", value, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseGreaterThanOrEqualTo(Integer value) {
+            addCriterion("cobin_choose >=", value, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseLessThan(Integer value) {
+            addCriterion("cobin_choose <", value, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseLessThanOrEqualTo(Integer value) {
+            addCriterion("cobin_choose <=", value, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseIn(List<Integer> values) {
+            addCriterion("cobin_choose in", values, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseNotIn(List<Integer> values) {
+            addCriterion("cobin_choose not in", values, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseBetween(Integer value1, Integer value2) {
+            addCriterion("cobin_choose between", value1, value2, "cobinChoose");
+            return (Criteria) this;
+        }
+
+        public Criteria andCobinChooseNotBetween(Integer value1, Integer value2) {
+            addCriterion("cobin_choose not between", value1, value2, "cobinChoose");
+            return (Criteria) this;
+        }
     }
 
     /**

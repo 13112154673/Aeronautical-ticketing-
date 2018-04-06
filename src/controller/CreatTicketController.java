@@ -33,21 +33,11 @@ public class CreatTicketController {
 	/*
 	 * 1.1跳转详细查找页面detailedSearch.jsp，并将搜索信息（出发地和目的地，出发时间可有可无）传入
 	 */
-	@RequestMapping("detailedSearch")
+	@RequestMapping("jumpdetailedSearch")
 	public ModelAndView detailedSearch(HttpServletRequest request) {
-		
 		ModelAndView mav = new ModelAndView("detailedSearch");
-		String departurePlace = request.getParameter("departurePlace");
-		String arrivalPlace = request.getParameter("arrivalPlace");
-		List<Flight> flightlist = new ArrayList<>();
-		System.out.println(departurePlace+"-------"+arrivalPlace);
-		if(departurePlace!=null&&arrivalPlace!=null) {
-			flightlist=flightService.findAllFlight(departurePlace, arrivalPlace,new Page(0,5));
-			System.out.println(flightlist.size());
-			String flightlistJson =JSON.toJSONString(flightlist, SerializerFeature.WriteDateUseDateFormat);
-			mav.addObject("flightslist",flightlistJson);
-			System.out.println(flightlistJson);
-		}
+		mav.addObject("departurePlace",request.getParameter("departurePlace"));
+		mav.addObject("arrivalPlace",request.getParameter("arrivalPlace"));
 		return mav;
 	}
 	/*

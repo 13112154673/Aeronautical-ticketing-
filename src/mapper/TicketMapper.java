@@ -1,9 +1,9 @@
 package mapper;
 
-import pojo.Ticket;
-import pojo.TicketExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import pojo.Ticket;
+import pojo.TicketExample;
 
 public interface TicketMapper {
     /**

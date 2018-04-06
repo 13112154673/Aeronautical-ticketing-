@@ -13,7 +13,7 @@
 <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
 
 <title>航空票务管理系统</title>
-</head>
+
 <!-- 贴在顶部(不会消失） -->
 <style>
 body {
@@ -28,6 +28,8 @@ body {
 	background-color: #EFEFEF
 }
 </style>
+</head>
+
 <body>
 	<!-- 贴在顶部(不会消失） -->
 	<nav class="navbar navbar-default navbar-fixed-top">
@@ -68,22 +70,26 @@ body {
 
 						<div id="myTabContent" class="tab-content">
 							<div class="tab-pane fade in active" id="findflight">
+								<form action="CreatTicket/jumpdetailedSearch" method="post">
+									<table class="table table-hover" id="table1">
+										<tbody>
 
-								<table class="table table-hover" id="table1" >
-									<tbody>
-										<form action="CreatTicket/detailedSearch" method="post">
 											<tr>
-												<td>出发地点:<input type="text" class="form-control" name="departurePlace"></td>
-												<td>到达地点:<input type="text" class="form-control" name="arrivalPlace"></td>
+												<td>出发地点:<input type="text" class="form-control"
+													name="departurePlace"></td>
+												<td>到达地点:<input type="text" class="form-control"
+													name="arrivalPlace"></td>
 											</tr>
 											<tr>
-												<td>出发时间:<input type="text" class="form-control" name="departureTime"></td>
-												<td><input type="submit" class="btn btn-default" value="确认" /></td>
+												<td>出发时间:<input type="text" class="form-control"
+													name="departureTime"></td>
+												<td><input type="submit" class="btn btn-default"
+													value="确认" /></td>
 											</tr>
 
-										</form>
-									</tbody>
-								</table>
+										</tbody>
+									</table>
+								</form>
 							</div>
 							<div class="tab-pane fade" id="findticket">
 								请输入机票编号：<br> <input type="text" class="form-control" id="findTicketByTId"

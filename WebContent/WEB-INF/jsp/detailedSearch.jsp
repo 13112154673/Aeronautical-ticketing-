@@ -88,20 +88,36 @@ div.container div.row div {
 </body>
 <script>
 $(document).ready(function(){
-	var date =${flightslist};
-	var str="";
-	for(var i=0;i<date.length;i++){
-	str+="<div class='container' onclick='choose(this)' data-fId ="+date[i]['fId']+">";
-	str+="<div class='row'>";
-	str+="<div class='col-xs-6 '>飞机编号："+date[i]['aId']+"<br>";
-	str+=date[i]['departureTime']+" 至 "+date[i]['arrivalTime']+"<br>"
-	str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
-	str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name='activity' value='头等' ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
-	str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name='activity' value='经济' ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
-	str+="<div class='col-xs-2 '>操作</div>";
-	str+="</div></div>";
-	}
-	$('#result').append(str);
+	var departurePlace="${departurePlace}";
+	var	arrivalPlace="${arrivalPlace}";
+	console.log(departurePlace+arrivalPlace);
+	$.ajax({
+		type : "post",
+		dataType : "json",
+		url : "redetailedSearch",
+		data : {
+			departurePlace : departurePlace,
+			arrivalPlace : arrivalPlace
+		},
+		success : function(date) {
+			var str="";
+			for(var i=0;i<date.length;i++){
+			str+="<div class='container' onclick='choose(this)' data-fId ="+date[i]['fId']+">";
+			str+="<div class='row'>";
+			str+="<div class='col-xs-6 '>飞机编号："+date[i]['aId']+"<br>";
+			str+=date[i]['departureTime']+" 至 "+date[i]['arrivalTime']+"<br>"
+			str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
+			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name='activity' value='头等' ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
+			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name='activity' value='经济' ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
+			str+="<div class='col-xs-2 '>操作</div>";
+			str+="</div></div>";
+			}
+			$('#result').append(str);
+		},
+		error : function() {
+			alert("查询失败");
+		}
+	});
 
 })
 function choose(obj){
