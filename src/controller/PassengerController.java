@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -185,6 +186,22 @@ public class PassengerController {
 		return mav;
 
 	}
+	/*
+	 * 3.3通过出发日期查询所有包含出发日期的航班列表
+	 */
+	/*@RequestMapping("findFlightByDate")
+	public void findFlightByDate(String date,HttpServletResponse response) {
+		Flight flight =ticketservice.findFlightByFid(1);
+		try {
+			Date ndate=new SimpleDateFormat("yyyy-MM-dd").parse(date);
+			System.out.println(flight.getDepartureTime().compareTo(ndate));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+	}*/
 	/*
 	 * 4.1使用Ajax的异步刷新，将退票申请发至数据库
 	 */

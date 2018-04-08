@@ -16,16 +16,27 @@
 
 <!-- 贴在顶部(不会消失） -->
 <style>
+div{
+   
+ 
+}
+.box{
+border:1px solid gray;
+    width:500px;
+    padding:0px;
+    margin: 0px;
+}
 body {
 	padding-top: 70px;
 }
 
 .align-center {
 	position: absolute;
-	top: 50%;
+	top: 60%;
 	height: 240px;
-	margin-top: -120px; /* negative half of the height */
+	margin-top: -60px; /* negative half of the height */
 	background-color: #EFEFEF
+	
 }
 </style>
 </head>
@@ -53,11 +64,10 @@ body {
 	</div>
 	</nav>
 	
-		名字：${onlinePassenger.pName}
-		<button class="btn btn-default"
-			onclick="javascrtpt:window.location.href='CreatTicket/detailedSearch'">注销</button>
-		<br />
-		<div class="align-center">
+		
+			<div class="box"><img alt="" src="image/航空.jpg" height="200" width="1300" /></div>
+		
+		<div class="align-center" >
 			<div class="container">
 				<div class="row clearfix">
 					<div class="col-md-4 column">
@@ -110,7 +120,8 @@ body {
 										data-toggle="collapse" data-parent="#panel-543132">购票须知</a>
 								</div>
 								<div class="panel-collapse collapse" id="panel-element-653283">
-									<div class="panel-body">待编辑</div>
+									<div class="panel-body">退票：起飞前24小时以前收不超过10%的退票费起飞前22以内2小时以前收10%的退票费，起飞前2小时以内收20%的退票费<br/>
+									改签：同等舱位更改是指所更改的航班的航空公司和舱位都相同</div>
 								</div>
 							</div>
 							<div class="panel panel-default">
@@ -119,7 +130,7 @@ body {
 										data-toggle="collapse" data-parent="#panel-543132">出行注意</a>
 								</div>
 								<div class="panel-collapse in" id="panel-element-58817">
-									<div class="panel-body">待编辑</div>
+									<div class="panel-body">注意安全</div>
 								</div>
 							</div>
 						</div>

@@ -56,7 +56,7 @@ body {
 							type="radio" name="sex" value="woman"> <br /> 居住城市:<input
 							type="text" name="city" value="${onlinePassenger.city}">
 						<br /> 生日:<input type="text" name="brithday"
-							id="test1" value="${onlinePassenger.brithday}"> <br />
+							id="test1" value="<fmt:formatDate value="${onlinePassenger.brithday}" pattern="yyyy-MM-dd"/>"> <br />
 
 						<legend class="text-center">安全信息</legend>
 						身份证:<input type="text" name="pId" value="${onlinePassenger.pId}">
@@ -112,9 +112,9 @@ body {
 									<td>${d.flight.fId }</td>
 									<td>${d.aircraft.company }</td>
 									<td>${d.aircraft.aId }</td>
-									<td>${d.flight.departureTime }</td>
+									<td><fmt:formatDate value="${d.flight.departureTime }" pattern="MM-dd HH:mm"/></td>
 									<td>${d.flight.departurePlace }</td>
-									<td>${d.flight.arrivalTime }</td>
+									<td><fmt:formatDate value="${d.flight.arrivalTime }" pattern="MM-dd HH:mm"/></td>
 									<td>${d.flight.arrivalPlace }</td>
 									<c:choose>
 									<c:when test="${d.state==0}">
@@ -143,9 +143,11 @@ body {
 						<h4 class="modal-title" id="myModalLabel">改签</h4>
 					</div>
 					<div class="modal-body">
-						<input type="text" id="tId1" disabled="true">
-						<input type="text" id="test5" value="${date}">
-						<input type="text" id="test5" value="">
+						<div id="updateFlightDate"></div>
+						<div id="updateFlightresult">
+							<input type="text" id="test2" name="updatedepartureTime">
+							<button onclick="findFlightBydate()">查询</button> <br />
+						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭
@@ -239,21 +241,38 @@ body {
 		var line=$(obj).parents("tr")[0].id;//获得当前行的行号
 		var table=$(obj).parents("table")[0];//获得当前表格
 		
-		var tId=table.rows[line].cells[1].innerText;
-		/* var pName=table.rows[line].cells[2].innerText;
-		var sex=table.rows[line].cells[3].innerText;
-		var fId=table.rows[line].cells[4].innerText;
-		var company=table.rows[line].cells[5].innerText;
-		var fId=table.rows[line].cells[6].innerText;
-		var departureTime=table.rows[line].cells[7].innerText;
+		$('#updateFlightDate').html("");//每次清除累积数据
+		var tId=table.rows[line].cells[1].innerText;//获取机票编号
+		var company =table.rows[line].cells[5].innerText//获取航空公司
 		var departurePlace=table.rows[line].cells[8].innerText;
+		var arrivalPlace=table.rows[line].cells[10].innerText;
+		
+		//日期格式化处理
+		var departureTime=table.rows[line].cells[7].innerText;
 		var arrivalTime=table.rows[line].cells[9].innerText;
-		var arrivalPlace=table.rows[line].cells[10].innerText; */
-		// var table=document.getElementById("forEach1");//找到表格
-
-        $('#tId1').val(tId);
-        //$('#date').val(departureTime);
+		var str="机票编号:"+tId+" 航空公司:"+company+"<br/>";
+		str+=departurePlace+" 到  "+arrivalPlace+"<br/>";
+		str+=departureTime+" 到  "+arrivalTime+"<br/>";
+		$('#updateFlightDate').append(str);
+		
+		
 	}  
+	function findFlightBydate(){
+		var date=document.getElementById("test2").value;
+		$.ajax({
+			type : "post",
+			url : "findFlightByDate",
+			data : {
+				date : date
+			},
+			success : function(data) {
+				
+			},
+			error : function() {
+				alert("查询失败");
+			}
+		});
+	}
 	//退票模态框
 	function returnTicket(obj){  
 		var line=$(obj).parents("tr")[0].id;//获得当前行的行号
@@ -278,6 +297,33 @@ body {
         });
 		
 	}
+	/* //日期转换函数
+	$(Date.prototype.format = function(format){ 
+    var o = { 
+        "M+" : this.getMonth()+1,                   //month 
+        "d+" : this.getDate(),                      //day 
+        "h+" : this.getHours(),                     //hour 
+        "m+" : this.getMinutes(),                   //minute 
+        "s+" : this.getSeconds(),                   //second 
+        "q+" : Math.floor((this.getMonth()+3)/3),  //quarter 
+        "S" : this.getMilliseconds()               //millisecond 
+    }
+
+    if(/(y+)/i.test(format)) { 
+        format = format.replace(RegExp.$1, 
+        (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+
+    for(var k in o) { 
+        if(new RegExp("("+ k +")").test(format)) { 
+            format = format.replace(RegExp.$1, 
+            RegExp.$1.length==1 ? o[k] : ("00"+ 
+            o[k]).substr((""+ o[k]).length));
+        } 
+    } 
+    return format; 
+});
+ */
 	//时间选择器
 	laydate.render({
 		  elem: '#test5'
@@ -285,7 +331,10 @@ body {
 		});
 	laydate.render({
 		elem : '#test1' //指定元素
-	})
+	});
+	laydate.render({
+		elem : '#test2' //指定元素
+	});
 </script>
 
 </html>
