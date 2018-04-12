@@ -105,6 +105,7 @@ public class BackstageController {
 			mav.setViewName("backstage");
 			return mav;
 		}
+		mav.addObject("error", "error");
 		return mav;
 	}
 	/*

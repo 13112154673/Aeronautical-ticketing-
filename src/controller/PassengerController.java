@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -129,19 +128,25 @@ public class PassengerController {
 		List<Ticket> ticketslist = ticketservice.findTicketByPhone(passenger.getPhone());
 		// 遍历出该乘客所有票务信息，并加入一个TicketComplete列表中
 		List<TicketComplete> ticketCompleteslist = new ArrayList<TicketComplete>();
+		List<TicketComplete> oldticketlist = new ArrayList<TicketComplete>();
 		if (ticketslist != null) {
 			for (int i = 0; i < ticketslist.size(); i++) {
 				Flight flight = ticketservice.findFlightByFid(ticketslist.get(i).getfId());
 				Aircraft aircraft = ticketservice.findAircraftByAid(flight.getaId());
 				TicketComplete ticketComplete = new TicketComplete(ticketslist.get(i).gettId(),ticketslist.get(i).getState(),ticketslist.get(i).getReason(), passenger, flight,
 						aircraft);
-				ticketCompleteslist.add(ticketComplete);
+				if(ticketComplete.getState()!=3) {
+					ticketCompleteslist.add(ticketComplete);
+				}else {
+					oldticketlist.add(ticketComplete);
+				}
 			}
 			System.out.println(passenger.getpName());
 
 			// System.out.println(ticketCompleteslist.get(0).getPassenger().getpName());
 		}
 		mav.addObject("ticketCompleteslist", ticketCompleteslist);
+		mav.addObject("oldticketlist", oldticketlist);
 		return mav;
 	}
 

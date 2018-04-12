@@ -27,7 +27,7 @@
 				<fieldset >
 					<legend class="text-center">员工登陆</legend>
 						员工号：<br>
-						<input type="text" name="sId" value="">
+						<input type="text" name="sId" value="">${error}
 						<br>
 						密码：<br>
 						<input type="password" name="password" value="">

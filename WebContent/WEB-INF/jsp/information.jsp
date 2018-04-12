@@ -50,7 +50,7 @@ body {
 					<form action="updateInformation?phone=${onlinePassenger.phone}"
 						method="post">
 						<legend class="text-center">基本信息</legend>
-						名字：<input type="text" name="pName" id="pName"
+						名字：<input type="text"name="pName" id="pName"
 							value="${onlinePassenger.pName}"><br /> 性别:男<input
 							type="radio" checked="checked" name="sex" value="man"> 女<input
 							type="radio" name="sex" value="woman"> <br /> 居住城市:<input
@@ -210,7 +210,7 @@ body {
 							<th>到达地点</th>
 						</thead>
 						<tbody>
-							<c:forEach items="${ticketCompleteslist}" var="d"
+							<c:forEach items="${oldticketlist}" var="d"
 								varStatus="status">
 								<tr>
 									<td class="ticketsId">${d.tId }</td>
@@ -220,9 +220,9 @@ body {
 									<td class="flightId">${d.flight.fId }</td>
 									<td class="aircraftCompany">${d.aircraft.company }</td>
 									<td class="aircraftId">${d.aircraft.aId }</td>
-									<td class="flightDepartureTime">${d.flight.departureTime }</td>
+									<td class="flightDepartureTime"><fmt:formatDate value="${d.flight.departureTime }" pattern="MM-dd HH:mm"/></td>
 									<td class="flightDeparturePlace">${d.flight.departurePlace }</td>
-									<td class="flightArrivalTime">${d.flight.arrivalTime }</td>
+									<td class="flightArrivalTime"><fmt:formatDate value="${d.flight.arrivalTime }" pattern="MM-dd HH:mm"/></td>
 									<td class="flightArrivalPlace">${d.flight.arrivalPlace }</td>
 								</tr>
 							</c:forEach>

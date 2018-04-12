@@ -49,8 +49,8 @@ body {
 
 					<legend class="text-center">安全信息</legend>
 					身份证<br /> <input type="text" name="pId" value=""> <br />
-					密码<br /> <input type="text" name="password" value=""><br />
-					确认密码<br /> <input type="text" name="rpassword" value=""><br />
+					密码<br /> <input type="password" name="password" value=""><br />
+					确认密码<br /> <input type="password" name="rpassword" value=""><br />
 
 					<legend class="text-center">联系方式</legend>
 					<div id="checkResult"></div>

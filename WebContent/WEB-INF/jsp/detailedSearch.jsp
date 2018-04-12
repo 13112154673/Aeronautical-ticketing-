@@ -30,7 +30,7 @@ div.container div.row div {
 }
 
 div.container div.row div {
-	background-color: lightgray;
+	background-color: #EFEFEF;
 	border: 1px solid gray;
 	text-align: center;
 }
@@ -110,7 +110,7 @@ $(document).ready(function(){
 			str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
 			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name="+date[i]['fId']+" value=0 ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
 			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name="+date[i]['fId']+" value=1 ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
-			str+="<div class='col-xs-2 ' onclick='choose(this)' data-fId ="+date[i]['fId']+">操作</div>";
+			str+="<div class='col-xs-2 ' onclick='choose(this)' data-fId ="+date[i]['fId']+">确认</div>";
 			str+="</div></div>";
 			}
 			$('#result').append(str);
@@ -145,7 +145,7 @@ function research(){
 			str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
 			str+="<div class='col-xs-2 '>"+date[i]['fristclassPrice']+"<input type='radio' name="+date[i]['fId']+" value=0 ><br><br>剩余座位"+date[i]['fristclassCount']+"</div>";
 			str+="<div class='col-xs-2 '>"+date[i]['economyPrice']+"<input type='radio' name="+date[i]['fId']+" value=1 ><br><br>剩余座位"+date[i]['economyCount']+"</div>";
-			str+="<div class='col-xs-2 ' onclick='choose(this)' data-fId ="+date[i]['fId']+">操作</div>";
+			str+="<div class='col-xs-2 ' onclick='choose(this)' data-fId ="+date[i]['fId']+">确认</div>";
 			str+="</div></div>";
 			}
 			$('#result').append(str);
