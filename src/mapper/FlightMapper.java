@@ -95,4 +95,10 @@ public interface FlightMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(Flight record);
+    /**
+     * 查询从XX到XX的某个时间段的日期
+     * @param example
+     * @return
+     */
+    List<Flight> selectByDate(String departurePlace,String arrivalPlace,String departureTime);
 }

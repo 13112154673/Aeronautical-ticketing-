@@ -353,4 +353,11 @@
       fristclass_count = #{fristclassCount,jdbcType=INTEGER}
     where f_id = #{fId,jdbcType=INTEGER}
   </update>
+  <select id="selectByDate" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from flight
+    where  departure_place = #{0} and  arrival_place = #{1} and Date(departure_time) = #{2}
+  </select>
+ 
 </mapper>
