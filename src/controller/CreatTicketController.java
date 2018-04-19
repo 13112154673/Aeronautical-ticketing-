@@ -58,12 +58,12 @@ public class CreatTicketController {
 		List<Flight> flightlist = new ArrayList<>();
 
 		if (null != departurePlace && null != arrivalPlace) {
-			System.out.println(departurePlace + arrivalPlace + departureTime);
+			
 			flightlist = flightService.findAllFlight(departurePlace, arrivalPlace, departureTime, new Page(0, 5));
-			System.out.println(flightlist.size());
+			
 			String flightlistJson = JSON.toJSONString(flightlist, SerializerFeature.WriteDateUseDateFormat);
 			out.print(flightlistJson);
-			System.out.println(flightlistJson);
+			
 
 		}
 

@@ -50,27 +50,34 @@ body {
 					<form action="updateInformation?phone=${onlinePassenger.phone}"
 						method="post">
 						<legend class="text-center">基本信息</legend>
-						名字：<input type="text"name="pName" id="pName"
-							value="${onlinePassenger.pName}"><br /> 性别:男<input
-							type="radio" checked="checked" name="sex" value="man"> 女<input
-							type="radio" name="sex" value="woman"> <br /> 居住城市:<input
-							type="text" name="city" value="${onlinePassenger.city}">
-						<br /> 生日:<input type="text" name="brithday"
+						姓名：<input type="text"name="pName" id="pName"
+							value="${onlinePassenger.pName}"><br />
+						性别：${onlinePassenger.sex} <input type="button" value="更改性别" onclick="showsex()"><br />
+						<span id="updateSex" style="display:none">性别:男<input
+							type="radio" name="sex" value="男"> 女<input
+							type="radio" name="sex" value="女"></span>
+						居住城市:<input type="text" name="city" value="${onlinePassenger.city}">
+						<br />
+						 生日:<input type="text" name="brithday"
 							id="test1" value="<fmt:formatDate value="${onlinePassenger.brithday}" pattern="yyyy-MM-dd"/>"> <br />
 
 						<legend class="text-center">安全信息</legend>
 						身份证:<input type="text" name="pId" value="${onlinePassenger.pId}">
-						<br /> 密码:<input type="text" name="password"
-							value="${onlinePassenger.password}"><br />
-
+						<br /> 
+						<input type="button" value="更改密码" onclick="showpassword()"><br />
+						<div id="updatePassword" style="display:none">
+							请输入原密码：<input type="password" id="oldpassword" value="">
+							请输入新密码：<input type="password" id="newpassword" value="">
+							<input type="button" value="确认修改" onclick="hidepassword()"><br />
+						</div>
 						<legend class="text-center">联系方式</legend>
 						手机号码:<input name="phone" id="phone" type="text"
-							value="${onlinePassenger.phone}" disabled="true"> <br />
+							value="${onlinePassenger.phone}" disabled="disabled"> <br />
 						电子邮箱:<input type="text" name="email"
 							value="${onlinePassenger.email}"> <br />
 
-						性别：${onlinePassenger.sex}<br /> <input type="submit" value="修改">
-						<input type="reset" value="重置">
+						 <input type="submit" value="修改">
+						<input type="reset" value="重置"> 
 					</form>
 				</div>
 			</div>
@@ -144,15 +151,15 @@ body {
 					</div>
 					<div class="modal-body">
 						<div id="updateFlightDate"></div>
+						改签日期：<input type="text" id="test2" name="updatedepartureTime">
+						<button onclick="findFlightBydate()">查询</button> <br />
 						<div id="updateFlightresult">
-							<input type="text" id="test2" name="updatedepartureTime">
-							<button onclick="findFlightBydate()">查询</button> <br />
 						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭
 						</button>
-						<button type="button" id="submit1" class="btn btn-primary">提交更改</button>
+						<button type="button" id="submit1" class="btn btn-primary" onclick="updateFlight()">提交更改</button>
 					</div>
 				</div>
 				<!-- /.modal-content -->
@@ -215,7 +222,6 @@ body {
 								<tr>
 									<td class="ticketsId">${d.tId }</td>
 									<td class="passengerName">${d.passenger.pName }</td>
-									<%-- <td>${d.cargoCount }</td> --%>
 									<td class="passengerSex">${d.passenger.sex }</td>
 									<td class="flightId">${d.flight.fId }</td>
 									<td class="aircraftCompany">${d.aircraft.company }</td>
@@ -235,6 +241,35 @@ body {
 </body>
 
 <script>
+	function showsex(){
+	 var d = document.getElementById("updateSex");
+	 d.style.display="block";
+	}
+	function showpassword(){
+	 var d = document.getElementById("updatePassword");
+	 d.style.display="block";
+	}
+	function hidepassword(){
+		 var d = document.getElementById("updatePassword");
+		 var oldpassword = document.getElementById("oldpassword").value;
+		 var newpassword = document.getElementById("newpassword").value;
+		 $.ajax({
+				type : "post",
+				url : "updatePassword",
+				data : {
+					oldpassword : oldpassword,
+					newpassword : newpassword
+				},
+				success : function(data) {
+					alert(data);
+				},
+				error : function() {
+					alert("操作错误，请重试");
+					
+				}
+			});
+		 d.style.display="none";
+	}
 	//改签模态框
 	function editDate(obj){  
 		//console.log($(obj).parents("table")[0]);//获得tr当前行,输出在浏览器的控制台.直接找到父节点
@@ -243,35 +278,91 @@ body {
 		
 		$('#updateFlightDate').html("");//每次清除累积数据
 		var tId=table.rows[line].cells[1].innerText;//获取机票编号
-		var company =table.rows[line].cells[5].innerText//获取航空公司
+		var fId =table.rows[line].cells[4].innerText//获取航空公司
 		var departurePlace=table.rows[line].cells[8].innerText;
 		var arrivalPlace=table.rows[line].cells[10].innerText;
 		
-		//日期格式化处理
 		var departureTime=table.rows[line].cells[7].innerText;
 		var arrivalTime=table.rows[line].cells[9].innerText;
-		var str="机票编号:"+tId+" 航空公司:"+company+"<br/>";
-		str+=departurePlace+" 到  "+arrivalPlace+"<br/>";
-		str+=departureTime+" 到  "+arrivalTime+"<br/>";
+		var str="<div class='text-center'>"
+		str+="机票编号:<span id='oldtId'>"+tId+"</span> 航班编号:<span id='oldFId'>"+fId+"</span><br/>";
+		str+="<span id='departurePlace'>"+departurePlace+"</span> 到  <span id='arrivalPlace'>"+arrivalPlace+"</span><br/>";
+		str+=departureTime+" 到  "+arrivalTime+"<br/></div>";
 		$('#updateFlightDate').append(str);
 		
 		
-	}  
+	}
+	//改签窗口中的查询日期
 	function findFlightBydate(){
 		var date=document.getElementById("test2").value;
+		var oldFId=$("#oldFId").text();
+		console.log(oldFId);
+		var departurePlace=$("#departurePlace").text();
+		var arrivalPlace=$("#arrivalPlace").text();
+		$('#updateFlightresult').html("");
 		$.ajax({
 			type : "post",
+			dataType : "json",
 			url : "findFlightByDate",
 			data : {
-				date : date
+				oldFId : oldFId,
+				date : date,
+				departurePlace : departurePlace,
+				arrivalPlace : arrivalPlace
 			},
-			success : function(data) {
+			success : function(date) {
 				
+				var str="";
+				if(0!=date.length){
+					//表格头
+					str+="<div class='container1'><div class='row'><div class='col-xs-4 '>航班信息</div><div class='col-xs-3 '>出发时间</div><div class='col-xs-3 '>到达时间</div><div class='col-xs-2 '>选择</div></div></div>";
+					for(var i=0;i<date.length;i++){
+						
+						//表格体
+						str+="<div class='container2'>";
+						str+="<div class='row'>";
+						str+="<div class='col-xs-4 '>飞机编号："+date[i]['aId']+"<br>";
+						str+=date[i]['departurePlace']+" -  "+date[i]['arrivalPlace']+"</div>"
+						str+="<div class='col-xs-3 '>"+date[i]['departureTime']+"</div>";
+						str+="<div class='col-xs-3 '>"+date[i]['arrivalTime']+"</div>";
+						str+="<div class='col-xs-2 '>&nbsp;<br><input type='radio' id='newflight' name='newflight' value="+date[i]['fId']+" ><br>&nbsp;</div>";
+						str+="</div></div>";
+					}
+				}else{
+					str+="<div class='text-center'>未查询到其他航班</div>";
+				}
+				$('#updateFlightresult').append(str);
 			},
-			error : function() {
-				alert("查询失败");
+			error : function() {	
+				alert("操作错误，请重试");
 			}
+			
 		});
+	}
+	//改签窗口提交
+	function updateFlight(){
+		var tId=$("#oldtId").text();
+		//为了区分不同的单选项，采用航班ID做name
+		var choose=$("#newflight").val();
+		if(null==choose){
+			alert("未选择改签航班");
+		}else{
+			$.ajax({
+				type : "post",
+				url : "updateNewFlight",
+				data : {
+					tId : tId,
+					choose : choose
+				},
+				success : function(date) {
+					$('#myModal1').modal('hide');
+					alert(date);
+				},
+				error : function() {
+					alert("请重试");
+				}
+			});
+		}
 	}
 	//退票模态框
 	function returnTicket(obj){  
@@ -297,33 +388,6 @@ body {
         });
 		
 	}
-	/* //日期转换函数
-	$(Date.prototype.format = function(format){ 
-    var o = { 
-        "M+" : this.getMonth()+1,                   //month 
-        "d+" : this.getDate(),                      //day 
-        "h+" : this.getHours(),                     //hour 
-        "m+" : this.getMinutes(),                   //minute 
-        "s+" : this.getSeconds(),                   //second 
-        "q+" : Math.floor((this.getMonth()+3)/3),  //quarter 
-        "S" : this.getMilliseconds()               //millisecond 
-    }
-
-    if(/(y+)/i.test(format)) { 
-        format = format.replace(RegExp.$1, 
-        (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-    }
-
-    for(var k in o) { 
-        if(new RegExp("("+ k +")").test(format)) { 
-            format = format.replace(RegExp.$1, 
-            RegExp.$1.length==1 ? o[k] : ("00"+ 
-            o[k]).substr((""+ o[k]).length));
-        } 
-    } 
-    return format; 
-});
- */
 	//时间选择器
 	laydate.render({
 		  elem: '#test5'

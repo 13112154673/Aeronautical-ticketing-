@@ -162,6 +162,7 @@ body {
 					机票信息：
 					<table id="tickettable">
 						<tbody>
+        
 							<tr>
 								<td>出发地点:<input type="text" class="form-control"
 									id="finddeparturePlace" disabled="disabled"></td>
@@ -191,11 +192,11 @@ body {
 <script>
 	//三个输入框都不能为空
 	function notempty() {
-		var departurePlace = document.getElementById("departurePlace").value;
-		var arrivalPlace = document.getElementById("arrivalPlace").value;
-		var Time = document.getElementById("Time").value;
-
-		if ("" == departurePlace || "" == arrivalPlace || "" == Time) {
+		var departurePlace=document.getElementById("departurePlace").value;
+		var	arrivalPlace=document.getElementById("arrivalPlace").value;
+		var	departureTime=document.getElementById("departureTime").value;
+		
+		if ("" == departurePlace || "" == arrivalPlace || "" == departureTime) {
 			alert("信息未填完整");
 			return false;
 		}
@@ -221,8 +222,8 @@ body {
 				
 			},
 			error : function() {
-				
-				alert("查询失败");
+				$('#myModal').modal('hide');
+				alert("查询失败,未找到该机票");
 				
 			}
 		});

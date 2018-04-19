@@ -54,7 +54,19 @@ public class TicketServiceImpl implements TicketService {
 			}
 		}
 		return false;
-
+	}
+	
+	@Override
+	public boolean updateTicketByTid(Integer tId, Integer newFId) {
+		if (tId != null) {
+			Ticket ticket = ticketmapper.selectByPrimaryKey(tId);
+			ticket.setNewfId(newFId);
+			ticket.setState(1);// 设置状态为改签申请中
+			if (ticket != null && ticketmapper.updateByPrimaryKeySelective(ticket) > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -120,5 +132,7 @@ public class TicketServiceImpl implements TicketService {
 		}
 		return false;
 	}
+
+	
 
 }

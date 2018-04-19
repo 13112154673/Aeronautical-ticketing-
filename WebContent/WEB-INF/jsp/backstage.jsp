@@ -130,7 +130,46 @@ div.well {
 	</div>
 
 	<div class="collapse" id="update">
-		<div class="well">这里显示改签列表</div>
+		<div class="well">
+			<table class="table table-hover" id="table1">
+					<thead>
+						<th>序号</th>
+						<th>机票编号</th>
+						<th>乘客</th>
+						<th>性别</th>
+						<th>航班号</th>
+						<th>航空公司</th>
+						<th>飞机编号</th>
+						<th>出发时间</th>
+						<th>出发地点</th>
+						<th>到达时间</th>
+						<th>到达地点</th>
+						<th>改签理由</th>
+						<th>操作</th>
+					</thead>
+					<tbody>
+						<c:forEach items="${ticketListWithState1}" var="d"
+							varStatus="status">
+							<tr id="${status.index+1}">
+								<td>${status.index+1}</td>
+								<td>${d.tId }</td>
+								<td>${d.passenger.pName }</td>
+								<td>${d.passenger.sex }</td>
+								<td>${d.flight.fId }</td>
+								<td>${d.aircraft.company }</td>
+								<td>${d.aircraft.aId }</td>
+								<td>${d.flight.departureTime }</td>
+								<td>${d.flight.departurePlace }</td>
+								<td>${d.flight.arrivalTime }</td>
+								<td>${d.flight.arrivalPlace }</td>
+								<td>${d.reason }</td>
+								<td><button class="btn btn-primary "
+										onclick="Agree(${d.tId})">同意改签</button></td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+		</div>
 	</div>
 
 	<div class="collapse" id="return">

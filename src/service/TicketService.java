@@ -13,6 +13,8 @@ public interface TicketService {
 	public Ticket fIndTicketByTid(Integer tId);
 	//1.3根据机票ID找到对应ticket并修改其退票备注
 	public boolean updateTicketByTid(Integer tId,String reason);
+	//1.4根据机票ID找到对应ticket并修改新航班
+	public boolean updateTicketByTid(Integer tId,Integer newFId);
 	//2.根据ticket里的航班ID找到对应航班flight
 	public Flight findFlightByFid(Integer fid);
 	//3.根据ticket里aid找到对应飞机名字

@@ -83,7 +83,7 @@ div.container2 div.row div {
 							<td>&nbsp;
 								<button class="btn btn-block"
 									style="background: white; border-color: #C0C0C0"
-									onclick="research()">重新搜索</button>
+									onclick="return research()">重新搜索</button>
 							</td>
 						</tr>
 					</tbody>
@@ -108,11 +108,18 @@ $(document).ready(function(){
 })
 //重新搜索，用ajax请求数据
 function research(){
-	//清空原信息
-	$('#result').html("");
+	
 	var departurePlace=document.getElementById("departurePlace").value;
 	var	arrivalPlace=document.getElementById("arrivalPlace").value;
 	var	departureTime=document.getElementById("departureTime").value;
+	//判断不为空
+	if ("" == departurePlace || "" == arrivalPlace || "" == Time) {
+		alert("信息未填完整");
+		return false;
+	}
+	//清空原信息
+	$('#result').html("");
+	
 	//调用
 	search(departurePlace,arrivalPlace,departureTime);
 }

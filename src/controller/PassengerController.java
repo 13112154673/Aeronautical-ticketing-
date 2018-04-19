@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,13 +17,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
 import pojo.Aircraft;
 import pojo.Flight;
 import pojo.Passenger;
 import pojo.Ticket;
 import pojo.TicketComplete;
+import service.FlightService;
 import service.PassengerService;
 import service.TicketService;
+import system.Page;
 
 @Controller
 @RequestMapping("Passenger")
@@ -31,6 +37,8 @@ public class PassengerController {
 	PassengerService passengerService;
 	@Autowired
 	TicketService ticketservice;
+	@Autowired
+	FlightService flightService;
 
 	/*
 	 * 1.1方便首页的登陆按钮直接跳转到WEB-IF下的login.jsp
@@ -50,13 +58,11 @@ public class PassengerController {
 		ModelAndView mav = new ModelAndView("redirect:../index.jsp");// 重定向后mav.addObject();添加的可能失效
 		Integer phone = Integer.valueOf(request.getParameter("phone"));
 		String password = (String) request.getParameter("password");
-		System.out.println(phone + password);
 		Passenger passenger = passengerService.findPassengerByPhone(phone, password);
 
 		if (passenger != null) {
 			// 登陆成功后，设置当前在线用户
 			request.getSession().setAttribute("onlinePassenger", passenger);
-			// System.out.println(passenger.getSex());
 			return mav;
 		}
 		mav.setViewName("login");
@@ -133,17 +139,14 @@ public class PassengerController {
 			for (int i = 0; i < ticketslist.size(); i++) {
 				Flight flight = ticketservice.findFlightByFid(ticketslist.get(i).getfId());
 				Aircraft aircraft = ticketservice.findAircraftByAid(flight.getaId());
-				TicketComplete ticketComplete = new TicketComplete(ticketslist.get(i).gettId(),ticketslist.get(i).getState(),ticketslist.get(i).getReason(), passenger, flight,
-						aircraft);
-				if(ticketComplete.getState()!=3) {
+				TicketComplete ticketComplete = new TicketComplete(ticketslist.get(i).gettId(),
+						ticketslist.get(i).getState(), ticketslist.get(i).getReason(), passenger, flight, aircraft);
+				if (ticketComplete.getState() != 3) {
 					ticketCompleteslist.add(ticketComplete);
-				}else {
+				} else {
 					oldticketlist.add(ticketComplete);
 				}
 			}
-			System.out.println(passenger.getpName());
-
-			// System.out.println(ticketCompleteslist.get(0).getPassenger().getpName());
 		}
 		mav.addObject("ticketCompleteslist", ticketCompleteslist);
 		mav.addObject("oldticketlist", oldticketlist);
@@ -164,13 +167,12 @@ public class PassengerController {
 		// String转date
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		passenger.setBrithday(formatter.parse(request.getParameter("brithday")));
-		passenger.setPassword(request.getParameter("password"));
 		passenger.setCity(request.getParameter("city"));
 		passenger.setEmail(request.getParameter("email"));
 		passenger.setPhone(phone);
 
 		if (passengerService.updatePassenger(passenger)) {
-			request.getSession().setAttribute("onlinePassenger", passenger);
+			request.getSession().setAttribute("onlinePassenger", passengerService.findPassengerByPhone(phone));
 			// 获取当前乘客所有简单票务
 			List<Ticket> ticketslist = ticketservice.findTicketByPhone(passenger.getPhone());
 			// 遍历出该乘客所有票务信息，并加入一个TicketComplete列表中
@@ -179,8 +181,8 @@ public class PassengerController {
 				for (int i = 0; i < ticketslist.size(); i++) {
 					Flight flight = ticketservice.findFlightByFid(ticketslist.get(i).getfId());
 					Aircraft aircraft = ticketservice.findAircraftByAid(flight.getaId());
-					TicketComplete ticketComplete = new TicketComplete(ticketslist.get(i).gettId(),ticketslist.get(i).getState(),ticketslist.get(i).getReason(), passenger, flight,
-							aircraft);
+					TicketComplete ticketComplete = new TicketComplete(ticketslist.get(i).gettId(),
+							ticketslist.get(i).getState(), ticketslist.get(i).getReason(), passenger, flight, aircraft);
 					ticketCompleteslist.add(ticketComplete);
 				}
 			}
@@ -191,34 +193,82 @@ public class PassengerController {
 		return mav;
 
 	}
+
 	/*
-	 * 3.3通过出发日期查询所有包含出发日期的航班列表
+	 * 3.3修改密码
 	 */
-	/*@RequestMapping("findFlightByDate")
-	public void findFlightByDate(String date,HttpServletResponse response) {
-		Flight flight =ticketservice.findFlightByFid(1);
-		try {
-			Date ndate=new SimpleDateFormat("yyyy-MM-dd").parse(date);
-			System.out.println(flight.getDepartureTime().compareTo(ndate));
-		} catch (ParseException e) {
-			e.printStackTrace();
+	@RequestMapping("updatePassword")
+	public void updatePassword(String oldpassword, String newpassword, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		// 获取当前乘客模型
+		Passenger passenger = (Passenger) session.getAttribute("onlinePassenger");
+		// 比对原密码
+		if (oldpassword.equals(passenger.getPassword())) {
+			passenger.setPassword(newpassword);
+			passengerService.updatePassenger(passenger);
+			// 为了避免同一页面修改两次密码出错，将新的用户信息再提交一遍
+			session.setAttribute("onlinePassenger", passenger);
+			pw.write("成功修改密码");
+		} else {
+			pw.write("原密码错误");
 		}
-		
-		
-		
-	}*/
+
+	}
+
+	/*
+	 * 3.4通过出发日期查询所有包含出发日期的航班列表
+	 */
+	@RequestMapping("findFlightByDate")
+	public void findFlightByDate(int oldFId,String date, String departurePlace, String arrivalPlace, HttpServletResponse response)
+			throws IOException {
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter out = response.getWriter();
+		List<Flight> flightlist = new ArrayList<>();
+		if (null != date) {
+			flightlist = flightService.findAllFlight(departurePlace, arrivalPlace, date, new Page(0, 5));
+			//剔除原航班
+			for(Iterator<Flight> it =flightlist.iterator();it.hasNext();){
+		         Flight flight = it.next();
+		         if(oldFId==flight.getfId()){
+		        	 it.remove();
+		        	 break;
+		         }
+		     }
+			String flightlistJson = JSON.toJSONString(flightlist, SerializerFeature.WriteDateUseDateFormat);
+			out.print(flightlistJson);
+		}
+
+	}
+
+	/*
+	 * 3.5选择好改签航班后提交改签申请
+	 */
+	@RequestMapping("updateNewFlight")
+	public void updateNewFlight(Integer tId,Integer choose, HttpServletResponse response) throws IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		if (tId != null && ticketservice.updateTicketByTid(tId, choose)) {
+			pw.write("成功提交改签申请");
+		} else {
+			pw.write("提交失敗");
+		}
+	}
+
 	/*
 	 * 4.1使用Ajax的异步刷新，将退票申请发至数据库
 	 */
 	@RequestMapping("returnTicket")
-	public void returnTicket(Integer tId,String reason,HttpServletResponse response) throws IOException {
-		//response.setCharacterEncoding("UTF_8");
-		response.setHeader("Content-type","text/html;charset=UTF-8");
-		PrintWriter pw=response.getWriter();
-		if(tId!=null&&ticketservice.updateTicketByTid(tId, reason)) {
+	public void returnTicket(Integer tId, String reason, HttpServletResponse response) throws IOException {
+		// response.setCharacterEncoding("UTF_8");
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		if (tId != null && ticketservice.updateTicketByTid(tId, reason)) {
 			pw.write("成功提交退票申请");
-		}else {
+		} else {
 			pw.write("提交失敗");
 		}
 	}
+
 }
