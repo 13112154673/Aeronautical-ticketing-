@@ -46,4 +46,19 @@ public class FlightServiceImpl implements FlightService {
 		return flightmapper.selectByDate(departurePlace, arrivalPlace, departureTime);
 	}
 
+	@Override
+	public boolean updateFlight(Flight flight) {
+		
+		if(flightmapper.updateByPrimaryKeySelective(flight)>0) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Flight findFlight(Integer fId) {
+		
+		return flightmapper.selectByPrimaryKey(fId);
+	}
+
 }

@@ -27,16 +27,27 @@
 				<fieldset >
 					<legend class="text-center">员工登陆</legend>
 						员工号：<br>
-						<input type="text" name="sId" value="">${error}
+						<input type="text" name="sId" id="sId" value="">${error}
 						<br>
 						密码：<br>
-						<input type="password" name="password" value="">
+						<input type="password" name="password" id="password" value="">
 						<br><br>
-						<input type="submit" value="登陆">
+						<input type="submit" onclick="return notempty()" value="登录">
 				</fieldset>
 			</form>	
 		</div>
   	</div>
 </div>
 </body>
+<script>
+function notempty() {
+		var id=document.getElementById("sId").value;
+		var	password=document.getElementById("password").value;
+		
+		if ("" == id || "" == password) {
+			alert("信息未填完整");
+			return false;
+		}
+	}
+</script>
 </html>

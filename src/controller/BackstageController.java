@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import pojo.Aircraft;
 import pojo.Flight;
@@ -50,7 +51,7 @@ public class BackstageController {
 	 * 1.1员工登陆
 	 */
 	@RequestMapping("loginstaff")
-	public ModelAndView login(Integer sId, String password, HttpServletRequest request, HttpSession session) {
+	public ModelAndView loginStaff(Integer sId, String password, HttpServletRequest request, HttpSession session) {
 		ModelAndView mav = new ModelAndView("redirect:../backstageIndex.jsp");
 		Staff staff = staffservice.findStaffById(sId, password);
 		if (staff != null) {
@@ -103,8 +104,10 @@ public class BackstageController {
 				Flight flight = ticketservice.findFlightByFid(ticketslist1.get(i).getfId());
 				Aircraft aircraft = ticketservice.findAircraftByAid(flight.getaId());
 				Passenger passenger = passengerservice.findPassengerByPhone(ticketslist1.get(i).getPhone());
+				Flight newflight = ticketservice.findFlightByFid(ticketslist1.get(i).getNewfId());
 				TicketComplete ticketComplete = new TicketComplete(ticketslist1.get(i).gettId(),
-						ticketslist1.get(i).getState(), ticketslist1.get(i).getReason(), passenger, flight, aircraft);
+						ticketslist1.get(i).getState(), ticketslist1.get(i).getReason(), passenger, flight, aircraft,
+						newflight);
 				ticketlistWithState1.add(ticketComplete);
 			}
 		}
@@ -167,9 +170,9 @@ public class BackstageController {
 			jArray.add(new FlightComplete(flight, ticketservice.findAircraftByAid(flight.getaId())));
 		}
 
-		System.out.println(jArray.toJSONString());
+		
 
-		out.print(jArray.toJSONString());
+		out.print(JSONArray.toJSONString(jArray,SerializerFeature.WriteDateUseDateFormat));
 
 	}
 
@@ -181,17 +184,78 @@ public class BackstageController {
 		response.setHeader("Content-type", "text/html;charset=UTF-8");
 		PrintWriter pw = response.getWriter();
 		if (tId != null) {
+			Ticket ticket =ticketservice.fIndTicketByTid(tId);
+			Flight flight=flightservice.findFlight(ticket.getfId());
+			if(0==ticket.getCobinChoose()) {
+				flight.setEconomyCount(flight.getFristclassCount()+1);
+			}else {
+				flight.setFristclassCount(flight.getEconomyCount()+1);
+			}
+			flightservice.updateFlight(flight);
 			ticketservice.deleteTicket(tId);
-
 			pw.write("成功");
 		} else {
 			pw.write("失败");
 		}
 	}
+
+	/*
+	 * 2.2对应passenger的updateTicket改签申请，改签后原航班内座位数量增加，新航班座位减少,前台设置不能更改为0的舱位把
+	 */
+	@RequestMapping("updateTicket")
+	public void updateTicket(Integer tId, HttpServletResponse response) throws IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		if (tId != null) {
+			// 应该事务操作，不过现在还没改
+			Ticket ticket = ticketservice.fIndTicketByTid(tId);
+			Flight oldflight = flightservice.findFlight(ticket.getfId());
+			Flight newflight = flightservice.findFlight(ticket.getNewfId());
+			// 标识改签是否成功，未成功原因：更改航班对应座位数不足
+			String isenough = "false";
+			// 0代表头等舱，1代表经济舱
+			if (0 == ticket.getCobinChoose()) {
+				int FristclassCount = newflight.getFristclassCount() - 1;
+				if (FristclassCount >= 0) {
+					oldflight.setFristclassCount(oldflight.getFristclassCount() + 1);
+					newflight.setFristclassCount(FristclassCount);
+					isenough = "true";
+				}
+			} else {
+				int EconomyCount = newflight.getEconomyCount() - 1;
+				if (EconomyCount >= 0) {
+					oldflight.setEconomyCount(oldflight.getEconomyCount());
+					newflight.setFristclassCount(EconomyCount);
+					isenough = "true";
+				}
+			}
+			if ("true".equals(isenough)) {
+				flightservice.updateFlight(oldflight);
+				flightservice.updateFlight(newflight);
+				ticketservice.updateTicketByTid(tId);
+			}
+			pw.write(isenough);
+		}
+	}
+
+	/*
+	 * 2.3反对改签，将机票状态设置为4
+	 */
+	@RequestMapping("opposeUpdate")
+	public void opposeUpdate(Integer tId, HttpServletResponse response) throws IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		if (ticketservice.updateTicketByTid(tId, true)) {
+			pw.write("成功");
+		} else {
+			pw.write("失败");
+
+		}
+	}
+
 	/*
 	 * 3.1增加航班
 	 */
-
 	@RequestMapping("addFlight")
 	public ModelAndView addFlight(HttpServletRequest request) throws ParseException {
 		ModelAndView mav = new ModelAndView("redirect:backstage");

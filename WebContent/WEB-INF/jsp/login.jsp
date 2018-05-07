@@ -34,18 +34,29 @@
 		<div class="text-center">
 			<form action="login" method="post">
 				<fieldset >
-					<legend class="text-center">用户登陆</legend>
+					<legend class="text-center">用户登录</legend>
 						手机号：<br>
-						<input type="text" name="phone" value="">
+						<input type="text" name="phone" id="phone" value="">
 						<br>
 						密码：<br>
-						<input type="password" name="password" value="">
-						<br><br>
-						<input type="submit" value="登陆">
+						<input type="password" name="password" id="password" value="">
+						<br>${error}<br>
+						<input type="submit" onclick="return notempty()" value="登录">
 				</fieldset>
 			</form>	
 		</div>
 	</div>
 </body>
+<script>
+function notempty() {
+		var phone=document.getElementById("phone").value;
+		var	password=document.getElementById("password").value;
+		
+		if ("" == phone || "" == password) {
+			alert("信息未填完整");
+			return false;
+		}
+	}
+</script>
 </html>
 

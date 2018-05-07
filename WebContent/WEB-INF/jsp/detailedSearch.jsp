@@ -113,10 +113,11 @@ function research(){
 	var	arrivalPlace=document.getElementById("arrivalPlace").value;
 	var	departureTime=document.getElementById("departureTime").value;
 	//判断不为空
-	if ("" == departurePlace || "" == arrivalPlace || "" == Time) {
+	if ("" == departurePlace || "" == arrivalPlace || "" == departureTime) {
 		alert("信息未填完整");
 		return false;
 	}
+	console.log(departurePlace);
 	//清空原信息
 	$('#result').html("");
 	
@@ -182,7 +183,7 @@ function choose(obj){
 					choose : choose
 				},
 				success : function(date) {
-					alert("购票成功，点击后跳往个人主页");
+					alert(date);
 					javascrtpt:window.location.href="../Passenger/jumpInformation";
 				},
 				error : function() {

@@ -65,6 +65,7 @@ public class PassengerController {
 			request.getSession().setAttribute("onlinePassenger", passenger);
 			return mav;
 		}
+		mav.addObject("error", "<font color='red'>密码错误，请重新输入</font>");
 		mav.setViewName("login");
 		return mav;
 	}
@@ -100,7 +101,7 @@ public class PassengerController {
 		passenger.setSex(request.getParameter("sex"));
 		// String转date
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		System.out.println(request.getParameter("brithday"));
+		
 		passenger.setBrithday(formatter.parse(request.getParameter("brithday")));
 		passenger.setPhone(Integer.valueOf(request.getParameter("phone")));
 		passenger.setPassword(request.getParameter("password"));
@@ -120,6 +121,24 @@ public class PassengerController {
 		mav.addObject("info", "error");
 		mav.setViewName("register");
 		return mav;
+	}
+	/*
+	 * 2.3注册验证手机号码是否唯一
+	 */
+	@RequestMapping("cheackPhone")
+	public void cheackPhone(Integer phone,HttpServletResponse response) throws IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		
+		if(null!=phone) {
+			if(null!=passengerService.findPassengerByPhone(phone)) {
+				pw.write("false");
+				
+			}else {
+				
+				pw.write("true");
+			}
+		}
 	}
 
 	/*
@@ -170,30 +189,16 @@ public class PassengerController {
 		passenger.setCity(request.getParameter("city"));
 		passenger.setEmail(request.getParameter("email"));
 		passenger.setPhone(phone);
-
+		request.getSession().setAttribute("onlinePassenger", passenger);
+		
 		if (passengerService.updatePassenger(passenger)) {
-			request.getSession().setAttribute("onlinePassenger", passengerService.findPassengerByPhone(phone));
-			// 获取当前乘客所有简单票务
-			List<Ticket> ticketslist = ticketservice.findTicketByPhone(passenger.getPhone());
-			// 遍历出该乘客所有票务信息，并加入一个TicketComplete列表中
-			List<TicketComplete> ticketCompleteslist = new ArrayList<TicketComplete>();
-			if (ticketslist != null) {
-				for (int i = 0; i < ticketslist.size(); i++) {
-					Flight flight = ticketservice.findFlightByFid(ticketslist.get(i).getfId());
-					Aircraft aircraft = ticketservice.findAircraftByAid(flight.getaId());
-					TicketComplete ticketComplete = new TicketComplete(ticketslist.get(i).gettId(),
-							ticketslist.get(i).getState(), ticketslist.get(i).getReason(), passenger, flight, aircraft);
-					ticketCompleteslist.add(ticketComplete);
-				}
-			}
-			mav.addObject("ticketCompleteslist", ticketCompleteslist);
+			mav.setViewName("redirect:jumpInformation");
 			return mav;
 		}
 		mav.addObject("info", "error");
 		return mav;
 
 	}
-
 	/*
 	 * 3.3修改密码
 	 */
@@ -218,7 +223,7 @@ public class PassengerController {
 	}
 
 	/*
-	 * 3.4通过出发日期查询所有包含出发日期的航班列表
+	 * 4.1通过出发日期查询所有包含出发日期的航班列表
 	 */
 	@RequestMapping("findFlightByDate")
 	public void findFlightByDate(int oldFId,String date, String departurePlace, String arrivalPlace, HttpServletResponse response)
@@ -243,7 +248,7 @@ public class PassengerController {
 	}
 
 	/*
-	 * 3.5选择好改签航班后提交改签申请
+	 * 4.2选择好改签航班后提交改签申请
 	 */
 	@RequestMapping("updateNewFlight")
 	public void updateNewFlight(Integer tId,Integer choose, HttpServletResponse response) throws IOException {
@@ -257,7 +262,7 @@ public class PassengerController {
 	}
 
 	/*
-	 * 4.1使用Ajax的异步刷新，将退票申请发至数据库
+	 * 5.1使用Ajax的异步刷新，将退票申请发至数据库
 	 */
 	@RequestMapping("returnTicket")
 	public void returnTicket(Integer tId, String reason, HttpServletResponse response) throws IOException {
@@ -268,6 +273,19 @@ public class PassengerController {
 			pw.write("成功提交退票申请");
 		} else {
 			pw.write("提交失敗");
+		}
+	}
+	/*
+	 * 6.1撤回操作，将改签中，退票中，或者退票失败的票，即使未经后台处理的票撤回操作，将机票状态置为0
+	 */
+	@RequestMapping("resetTicket")
+	public void resetTicket(Integer tId,HttpServletResponse response) throws IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		if(null!=tId && ticketservice.updateTicketByTid(tId, false)) {
+			pw.write("成功取消操作");
+		}else {
+			pw.write("取消操作失败");
 		}
 	}
 

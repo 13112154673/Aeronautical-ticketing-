@@ -14,4 +14,8 @@ public interface FlightService {
 	public List<Flight> findAllFlight(String departurePlace,String arrivalPlace,String departureTime,Page page);
 	//3.增加航班
 	public boolean addFlight(Flight flight);
+	//4.航班座位变化，
+	public Flight findFlight(Integer fId);
+	//5.航班座位变化，
+	public boolean updateFlight(Flight flight);
 }

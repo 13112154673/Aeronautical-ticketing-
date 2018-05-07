@@ -53,7 +53,7 @@ div.well {
 
 	<div class="collapse" id="select">
 		<div class="well">
-			这里先显示目前所有航班（最好按照时间排列）然后还要有精确搜索项
+			<!-- 这里先显示目前所有航班（最好按照时间排列）然后还要有精确搜索项 -->
 			<div class="panel-body">
 				<table class="table table-hover" id="table1">
 					<thead>
@@ -76,10 +76,11 @@ div.well {
 				</table>
 			</div>
 			<div style="text-align: center">
-
-				<button id="showlast"></button>
-				<button id="shownext"></button>
-
+			
+				
+				<button id="showlast" start="0" class="btn btn-link">上一页</button>
+				<button id="shownext" start="0" class="btn btn-link">下一页</button>
+				
 			</div>
 		</div>
 	</div>
@@ -92,15 +93,15 @@ div.well {
 					<form action="addFlight" method="post">
 						<tr>
 							<td>航班编号:<input type="text" name="fId"></td>
-							<td>选择飞机:<select id="company" name="company" onChange="changeAId(this)">
-											<option value="0">----</option>
-											<c:forEach items="${allAircraft}" var="d" varStatus="ds">
-												<option >${d.key}</option>
-											</c:forEach>
-										</select>
-										<select id="airName" name="airName">
-											<option value="0">----</option>
-										</select>
+							<td>选择飞机:<select id="company" name="company"
+								onChange="changeAId(this)">
+									<option value="0">----</option>
+									<c:forEach items="${allAircraft}" var="d" varStatus="ds">
+										<option>${d.key}</option>
+									</c:forEach>
+							</select> <select id="airName" name="airName">
+									<option value="0">----</option>
+							</select>
 						</tr>
 						<tr>
 							<td>出发时间:<input type="text" name="departureTime"
@@ -132,43 +133,46 @@ div.well {
 	<div class="collapse" id="update">
 		<div class="well">
 			<table class="table table-hover" id="table1">
-					<thead>
-						<th>序号</th>
-						<th>机票编号</th>
-						<th>乘客</th>
-						<th>性别</th>
-						<th>航班号</th>
-						<th>航空公司</th>
-						<th>飞机编号</th>
-						<th>出发时间</th>
-						<th>出发地点</th>
-						<th>到达时间</th>
-						<th>到达地点</th>
-						<th>改签理由</th>
-						<th>操作</th>
-					</thead>
-					<tbody>
-						<c:forEach items="${ticketListWithState1}" var="d"
-							varStatus="status">
-							<tr id="${status.index+1}">
-								<td>${status.index+1}</td>
-								<td>${d.tId }</td>
-								<td>${d.passenger.pName }</td>
-								<td>${d.passenger.sex }</td>
-								<td>${d.flight.fId }</td>
-								<td>${d.aircraft.company }</td>
-								<td>${d.aircraft.aId }</td>
-								<td>${d.flight.departureTime }</td>
-								<td>${d.flight.departurePlace }</td>
-								<td>${d.flight.arrivalTime }</td>
-								<td>${d.flight.arrivalPlace }</td>
-								<td>${d.reason }</td>
-								<td><button class="btn btn-primary "
-										onclick="Agree(${d.tId})">同意改签</button></td>
-							</tr>
-						</c:forEach>
-					</tbody>
-				</table>
+				<thead>
+					<th>序号</th>
+					<th>机票编号</th>
+					<th>乘客手机</th>
+					<th>原航班号</th>
+					<th>出发地点</th>
+					<th>到达地点</th>
+					<th>原出发时间</th>
+					<th>原到达时间</th>
+					<th>改签航班编号</th>
+					<th>改签出发时间</th>
+					<th>改签到达时间</th>
+					<th>操作</th>
+				</thead>
+				<tbody>
+					<c:forEach items="${ticketListWithState1}" var="d"
+						varStatus="status">
+						<tr id="${status.index+1}">
+							<td>${status.index+1}</td>
+							<td>${d.tId }</td>
+							<td>${d.passenger.phone }</td>
+							<td>${d.flight.fId }</td>
+							<td>${d.flight.departurePlace }</td>
+							<td>${d.flight.arrivalPlace }</td>
+							<td><fmt:formatDate value="${d.flight.departureTime }"
+									pattern="yyyy-MM-dd hh:mm" /></td>
+							<td><fmt:formatDate value="${d.flight.arrivalTime }"
+									pattern="yyyy-MM-dd hh:mm" /></td>
+							<td>${d.newflight.fId }</td>
+							<td><fmt:formatDate value="${d.newflight.departureTime }"
+									pattern="yyyy-MM-dd hh:mm" /></td>
+							<td><fmt:formatDate value="${d.newflight.arrivalTime }"
+									pattern="yyyy-MM-dd hh:mm" /></td>
+							<td><button class="btn btn-success "
+									onclick="AgreeUpdate(${d.tId})">同意</button>
+								<button class="btn btn-warning " onclick="OpposeUpdate(${d.tId})">反对</button></td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
 		</div>
 	</div>
 
@@ -204,12 +208,14 @@ div.well {
 								<td>${d.flight.fId }</td>
 								<td>${d.aircraft.company }</td>
 								<td>${d.aircraft.aId }</td>
-								<td>${d.flight.departureTime }</td>
+								<td><fmt:formatDate value="${d.flight.departureTime }"
+										pattern="yyyy-MM-dd hh:mm" /></td>
 								<td>${d.flight.departurePlace }</td>
-								<td>${d.flight.arrivalTime }</td>
+								<td><fmt:formatDate value="${d.flight.arrivalTime }"
+										pattern="yyyy-MM-dd hh:mm" /></td>
 								<td>${d.flight.arrivalPlace }</td>
 								<td>${d.reason }</td>
-								<td><button class="btn btn-primary "
+								<td><button class="btn btn-success "
 										onclick="Agree(${d.tId})">同意退票</button></td>
 							</tr>
 						</c:forEach>
@@ -231,7 +237,36 @@ laydate.render({
 	  elem: '#arrivalTime'
 	  ,type: 'datetime'
 	});
-//同意退票，后期要删除该节点！！！！！！！
+//同意改签，刷新页面
+function AgreeUpdate(tId){  
+	var url="updateTicket";
+	$.ajax({
+        url: url,
+        data:{"tId":tId},
+        success: function(result){
+          if("true" == result){
+        	  alert("成功");
+          }else{
+        	  alert("失败");
+          }
+          location.reload();
+        }
+    });
+}
+//反对改签，位置不足
+function OpposeUpdate(tId){  
+	var url="opposeUpdate";
+	$.ajax({
+        url: url,
+        data:{"tId":tId},
+        success: function(result){
+          alert(result);
+          location.reload();
+        }
+    });
+}
+
+//同意退票，刷新页面
 function Agree(tId){  
 	var url="returnTicketAgree";
 	$.ajax({
@@ -239,6 +274,7 @@ function Agree(tId){
         data:{"tId":tId},
         success: function(result){
           alert(result);
+          location.reload();
         }
     });
 }
@@ -265,7 +301,7 @@ $("#show,#showlast,#shownext").click(function() {
 	if($(this).text()=="查询航班"){
 		start=0;
 	}else{
-		start=$(this).text();
+		start=$(this).attr("start");
 	}
 	$.ajax({
 		type : "post",
@@ -288,7 +324,7 @@ $("#show,#showlast,#shownext").click(function() {
 		       tr += "<td>" + d.flight["fId"] + "</td>";
 		       tr += "<td>" + d.aircraft["company"] + "</td>";
 		       tr += "<td>" + d.aircraft["aId"] + "</td>";
-		       tr += "<td>" + d.flight["departureTime"] + "</td>";
+		       tr += "<td>" + d.flight["departureTime"]+"</td>";
 		       tr += "<td>" + d.flight["departurePlace"] + "</td>";
 		       tr += "<td>" + d.flight["arrivalTime"] + "</td>";
 		       tr += "<td>" + d.flight["arrivalPlace"] + "</td>";
@@ -300,8 +336,8 @@ $("#show,#showlast,#shownext").click(function() {
 		       str += tr; 
 			}
 		       tbody.innerHTML = str; 
-		      $('#shownext').html(data[0].start+data[0].count>data[0].last?data[0].last:data[0].start+data[0].count);
-		      $('#showlast').html(data[0].start-data[0].count<0?0:data[0].start-data[0].count);
+		      $('#shownext').attr("start",data[0].start+data[0].count>data[0].last?data[0].last:data[0].start+data[0].count);
+		      $('#showlast').attr("start",data[0].start-data[0].count<0?0:data[0].start-data[0].count);
 			
 		},
 		error : function() {

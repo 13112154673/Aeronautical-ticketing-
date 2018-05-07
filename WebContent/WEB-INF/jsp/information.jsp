@@ -125,11 +125,17 @@ body {
 									<td>${d.flight.arrivalPlace }</td>
 									<c:choose>
 									<c:when test="${d.state==0}">
-									<td><button class="btn btn-primary " data-toggle="modal" data-target="#myModal1" onclick="editDate(this)">改签</button>
+									<td><button class="btn btn-success " data-toggle="modal" data-target="#myModal1" onclick="editDate(this)">改签</button>
 										<button class="btn btn-primary " data-toggle="modal" data-target="#myModal2" onclick="returnTicket(this)">退票</button></td>
 									</c:when>
+									<c:when test="${d.state==1}">
+										<td>改签处理<button class="btn btn-warning "onclick="revoke(${d.tId })">撤回</button></td>
+									</c:when>
+									<c:when test="${d.state==2}">
+										<td>退票处理<button class="btn btn-warning "onclick="revoke(${d.tId })">撤回</button></td>
+									</c:when>
 									<c:otherwise>
-										<td>服务处理中</td>
+										<td>改签失败<button class="btn btn-warning "onclick="revoke(${d.tId })">撤回</button></td>
 									</c:otherwise>
 									</c:choose>
 								</tr>
@@ -315,7 +321,7 @@ body {
 				var str="";
 				if(0!=date.length){
 					//表格头
-					str+="<div class='container1'><div class='row'><div class='col-xs-4 '>航班信息</div><div class='col-xs-3 '>出发时间</div><div class='col-xs-3 '>到达时间</div><div class='col-xs-2 '>选择</div></div></div>";
+					str+="<div class='container1'><div class='row'><div class='col-xs-4 '>航班信息</div><div class='col-xs-3 '>出发时间</div><div class='col-xs-2 '>到达时间</div><div class='col-xs-2 '>选择</div></div></div>";
 					for(var i=0;i<date.length;i++){
 						
 						//表格体
@@ -357,6 +363,7 @@ body {
 				success : function(date) {
 					$('#myModal1').modal('hide');
 					alert(date);
+					location.reload();
 				},
 				error : function() {
 					alert("请重试");
@@ -384,10 +391,24 @@ body {
             data:{"tId":tId,"reason":reason},
             success: function(result){
               alert(result);
+              location.reload();
             }
         });
 		
 	}
+	//撤回操作
+	function revoke(tId){
+		var url="resetTicket";
+		$.ajax({
+	        url: url,
+	        data:{"tId":tId},
+	        success: function(result){
+	          alert(result);
+	          location.reload();
+	        }
+	    });
+	}
+	
 	//时间选择器
 	laydate.render({
 		  elem: '#test5'

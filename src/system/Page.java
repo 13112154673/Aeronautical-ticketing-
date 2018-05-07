@@ -2,7 +2,7 @@ package system;
 
 public class Page {
 	private int start=0;
-	private int count=2;
+	private int count=5;
 	private int last=0;
 	
 	public Page() {

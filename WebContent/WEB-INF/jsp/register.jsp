@@ -40,27 +40,28 @@ body {
 				<fieldset>
 					<legend class="text-center">用户注册</legend>
 					<legend class="text-center">基本信息</legend>
-					姓名<br /> <input type="text" name="pName" id="pName" value=""><br />
+					<font color="red">*</font> 姓名<br /> <input type="text"
+						name="pName" id="pName" value=""><br /> <font color="red">*</font>
 					性别<br /> 男<input type="radio" checked="checked" name="sex"
-						value="man"> 女<input type="radio" name="sex" value="woman">
+						value="男"> 女<input type="radio" name="sex" value="女">
 					<br /> 居住城市<br /> <input type="text" name="city" value="">
-					<br /> 生日<br /> <input type="text" name="brithday" id="brithday" value=""
-					> <br />
+					<br /> <font color="red">*</font>生日<br /> <input type="text"
+						name="brithday" id="brithday" value=""> <br />
 
 					<legend class="text-center">安全信息</legend>
-					身份证<br /> <input type="text" name="pId" value=""> <br />
-					密码<br /> <input type="password" name="password" value=""><br />
-					确认密码<br /> <input type="password" name="rpassword" value=""><br />
+					<font color="red">*</font> 身份证<br /> <input type="text" name="pId"
+						id="pId" value=""> <br /> <font color="red">*</font> 密码<br />
+					<input type="password" name="password" id="password" value=""><br />
+					<font color="red">*</font> 确认密码<br /> <input type="password"
+						name="rpassword" id="rpassword" value=""><br />
 
 					<legend class="text-center">联系方式</legend>
+					<font color="red">*</font> 手机号码（该项将作为您的登陆账号）<br /> <input
+						name="phone" id="phone" type="text" value="">
 					<div id="checkResult"></div>
-					手机号码（该项将作为您的登陆账号）<br /> <input name="phone" id="phone" type="text"
-						value=""> <br />
-					<div id="checkResult"></div>
-					电子邮箱<br /> <input type="text" name="email" value=""> <br />
-
-					<input type="submit" value="提交"> <input type="reset"
-						value="重置">
+					<br /> 电子邮箱<br /> <input type="text" name="email" value="">
+					<br /> <input type="submit" onclick="return notempty()" value="提交">
+					<input type="reset" value="重置">
 				</fieldset>
 			</div>
 		</form>
@@ -76,13 +77,53 @@ body {
 	});
 </script>
 <script>
-	/* 不刷新验证手机号码是否重复，未写完 */
+	//验证所需输入不为空和两次密码是否一致
+	function notempty() {
+		var phone = $("#phone").val();
+		var pName = $("#pName").val();
+		var sex = $("input[name='sex']:checked").val();
+		var pId = $("#pId").val();
+		var password = $("#password").val();
+		var rpassword = $("#rpassword").val();
+		var brithday = $("#brithday").val();
+		if ("" == phone || "" == pName || "" == sex || "" == pId
+				|| "" == password || "" == rpassword || "" == brithday) {
+			alert("信息未填完整");
+			return false;
+		}
+		if (rpassword!=password) {
+			alert("两次输入密码不一致");
+			$("#password").val("");
+			$("#rpassword").val("");
+			return false;
+		}
+	}
+	
+
+	/* 不刷新验证手机号码是否重复 */
 	$(function() {
-		$("#phone").keyup(function() {
-			var value = $(this).val();
-			var page = "../checkName.jsp?phone=" + value;
-			$("#checkResult").load(page);
-		});
+		$("#phone").keyup(
+				function() {
+					var phone = $(this).val();
+					$.ajax({
+						type : "post",
+						url : "cheackPhone",
+						data : {
+							phone : phone
+						},
+						success : function(data) {
+							if ("true" == data) {
+								$("#checkResult").html("");
+								$("#checkResult").append(
+										"<font color='greet'>该手机号可使用</font>");
+							} else if ("false" == data) {
+								$("#checkResult").html("");
+								$("#checkResult").append(
+										"<font color='red'>该手机号已被注册</font>");
+							}
+						}
+					});
+				});
 	});
 </script>
 

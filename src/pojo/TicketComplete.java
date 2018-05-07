@@ -14,6 +14,8 @@ public class TicketComplete {
 	private Flight flight;
 	private Aircraft aircraft;
 	
+	private Flight newflight;
+	
 	public TicketComplete(Integer tId,Integer state,String reason,Passenger passenger,Flight flight,Aircraft aircraft) {
 		this.tId=tId;
 		this.state=state;
@@ -21,6 +23,16 @@ public class TicketComplete {
 		this.passenger=passenger;
 		this.flight=flight;
 		this.aircraft=aircraft;
+	}
+	
+	public TicketComplete(Integer tId,Integer state,String reason,Passenger passenger,Flight flight,Aircraft aircraft,Flight newflight) {
+		this.tId=tId;
+		this.state=state;
+		this.reason=reason;
+		this.passenger=passenger;
+		this.flight=flight;
+		this.aircraft=aircraft;
+		this.setNewflight(newflight);
 	}
 	
 	public String getReason() {
@@ -146,4 +158,12 @@ public class TicketComplete {
 	 * public void setFristclassCount(Integer fristclassCount) {
 	 * this.fristclassCount = fristclassCount; }
 	 */
+
+	public Flight getNewflight() {
+		return newflight;
+	}
+
+	public void setNewflight(Flight newflight) {
+		this.newflight = newflight;
+	}
 }

@@ -68,7 +68,38 @@ public class TicketServiceImpl implements TicketService {
 		}
 		return false;
 	}
-
+	
+	@Override
+	public boolean updateTicketByTid(Integer tId) {
+		if (tId != null) {
+			Ticket ticket = ticketmapper.selectByPrimaryKey(tId);
+			ticket.setfId(ticket.getNewfId());
+			ticket.setNewfId(0);
+			ticket.setState(0);// 设置状态为常规状态
+			if (ticket != null && ticketmapper.updateByPrimaryKey(ticket) > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean updateTicketByTid(Integer tId, boolean isoppose) {
+		Ticket ticket = ticketmapper.selectByPrimaryKey(tId);
+		if(null!=ticket && isoppose) {
+			ticket.setState(4);//反对退票，机票状态4
+			ticket.setNewfId(0);
+		}else if(null!=ticket && !isoppose) {
+			ticket.setState(0);// 设置状态为常规状态
+			ticket.setNewfId(0);
+			ticket.setReason(null);
+		}
+		if (ticket != null && ticketmapper.updateByPrimaryKey(ticket) > 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public Flight findFlightByFid(Integer fId) {
 
@@ -132,6 +163,10 @@ public class TicketServiceImpl implements TicketService {
 		}
 		return false;
 	}
+
+	
+
+	
 
 	
 

@@ -58,12 +58,11 @@ public class CreatTicketController {
 		List<Flight> flightlist = new ArrayList<>();
 
 		if (null != departurePlace && null != arrivalPlace) {
-			
+
 			flightlist = flightService.findAllFlight(departurePlace, arrivalPlace, departureTime, new Page(0, 5));
-			
+
 			String flightlistJson = JSON.toJSONString(flightlist, SerializerFeature.WriteDateUseDateFormat);
 			out.print(flightlistJson);
-			
 
 		}
 
@@ -108,10 +107,32 @@ public class CreatTicketController {
 		ticket.setfId(fId);
 		ticket.setCobinChoose(choose);
 
-		if (ticketService.insertTicket(ticket)) {
-			out.print("成功购票");
+		// 这里应该要有事务管理，现在还没弄
+		// 定义个标志，确认舱位充足且以及在数据库中减少了
+		boolean isenough = false;
+		// 对应座位数量减1
+		Flight flight = flightService.findFlight(fId);
+		// 头等舱0，经济舱1
+		if (0 == choose) {
+			int FristclassCount = flight.getFristclassCount() - 1;
+			if (FristclassCount >= 0) {
+				flight.setFristclassCount(FristclassCount);
+				isenough = true;
+			}
 		} else {
-			out.print("购票失败");
+			int EconomyCount = flight.getEconomyCount() - 1;
+			if (EconomyCount >= 0) {
+				flight.setEconomyCount(EconomyCount);
+				isenough = true;
+			}
 		}
+		if (isenough) {
+			flightService.updateFlight(flight);
+			ticketService.insertTicket(ticket);
+			out.print("成功购票，点击后跳转到个人主页");
+		} else {
+			out.print("购票失败，座位不足");
+		}
+
 	}
 }
